@@ -10,7 +10,7 @@ public class Cell {
     public byte background;
     public int font;
 
-    public Cell(char character, byte foreground, byte background, int font) {
+    public Cell(int character, byte foreground, byte background, int font) {
         this.content = character;
         this.foreground = foreground;
         this.background = background;

@@ -7,11 +7,41 @@ public class TerminalBuffer {
     private final int maxxScrollBack;
 
     private final ArrayList<Line> allLines;
-    private int cursorX = 0;
-    private int cursorY = 0;
     private byte currentFg = 0;
     private byte currentBg = 0;
     private int currentFont = 0;
+
+    public class Cursor {
+        private int cursorX, cursorY;
+
+        public Cursor(int cursorX, int cursorY)
+        {
+            this.cursorX = cursorX;
+            this.cursorY = cursorY;
+        }
+
+        public int getPositionByX()
+        {
+            return cursorX;
+        }
+
+        public int getPositionByY()
+        {
+            return cursorY;
+        }
+
+        public void setVertically(int lines)
+        {
+            cursorY = Math.max(0, Math.min(height - 1, cursorY + lines));
+        }
+
+        public void setHorizontally(int cells)
+        {
+            cursorX = Math.max(0, Math.min(width - 1, cursorX + cells));
+        }
+    }
+
+    public Cursor cursor = new Cursor(0, 0);
 
     public TerminalBuffer(int width, int height, int maxxScrollBack) {
         this.width = width;
@@ -28,5 +58,32 @@ public class TerminalBuffer {
     {
         int index = (allLines.size() - height) + y;
         return allLines.get(index);
+    }
+
+    public void write(int character)
+    {
+        Line currentLine = getLine(cursor.cursorY);
+        Cell newCell = new Cell(character, currentFg, currentBg, currentFont);
+
+        currentLine.write(cursor.cursorX, newCell);
+        cursor.cursorX++;
+        if (cursor.cursorX >= this.width) {
+            cursor.cursorX = 0;
+            cursor.cursorY++;
+
+            if (cursor.cursorY >= this.height) {
+                cursor.cursorY = height - 1;
+                scrollUp();
+            }
+        }
+    }
+
+    public void scrollUp()
+    {
+        allLines.add(new Line(this.width));
+
+        if (allLines.size() > height + maxxScrollBack) {
+            allLines.remove(0);
+        }
     }
 }
