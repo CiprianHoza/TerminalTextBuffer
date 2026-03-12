@@ -130,6 +130,8 @@ public class TerminalBuffer {
             currentLine.write(i, new Cell(character, currentFg, currentBg, currentFont));
     }
 
+    //#######################################################
+    //Clear Operations
     public void clearAll()
     {
         allLines.clear();
@@ -147,4 +149,73 @@ public class TerminalBuffer {
         for (int i = 0; i < height; i++)
             fillLine(i, ' ');
     }
+    //#######################################################
+
+    //#######################################################
+    //Content Acces
+
+    public int getCharacter(int x, int y)
+    {
+        Line currentLine = getLine(y);
+        if (currentLine != null)
+            return currentLine.getCell(x).content;
+        return -1;
+    }
+
+    public int getFont(int x, int y)
+    {
+        Line currentLine = getLine(y);
+        if (currentLine != null)
+            return currentLine.getCell(x).font;
+        return -1;
+    }
+
+    public int getBackGround(int x, int y)
+    {
+        Line currentLine = getLine(y);
+        if (currentLine != null)
+            return currentLine.getCell(x).background;
+        return -2;
+    }
+
+    public int getForeGround(int x, int y)
+    {
+        Line currentLine = getLine(y);
+        if (currentLine != null)
+            return currentLine.getCell(x).foreground;
+        return -2;
+    }
+
+    public String getLineString(int y)
+    {
+        return getLine(y).toString();
+    }
+
+    public String getScreenString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < height; i++) {
+            Line currentLine = getLine(i);
+            if (currentLine != null)
+            {
+                sb.append(currentLine);
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getScrAllString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Line currentLine : allLines)
+        {
+            sb.append(currentLine);
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+    //#######################################################
+
 }
