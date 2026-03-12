@@ -7,8 +7,12 @@ public class TerminalBuffer {
     private final int maxxScrollBack;
 
     private final ArrayList<Line> allLines;
-    private byte currentFg = 0;
-    private byte currentBg = 0;
+
+    //default values for background and foreground
+    private byte currentFg = -1;
+    private byte currentBg = -1;
+
+    //default font(bold, italic and underline are off)
     private int currentFont = 0;
 
     public class Cursor {
@@ -52,6 +56,37 @@ public class TerminalBuffer {
         for (int i = 0; i < height; i++) {
             allLines.add(new Line(width));
         }
+    }
+
+    public void setBold(boolean isBold)
+    {
+        if (isBold)
+            currentFont |= Cell.BOLD;
+        else
+            currentFont &= ~Cell.BOLD;
+    }
+
+    public void setItalic(boolean italic)
+    {
+        if (italic)
+            currentFont |= Cell.ITALIC;
+        else
+            currentFont &= ~Cell.ITALIC;
+    }
+
+    public void setUnderline(boolean underline)
+    {
+        if (underline)
+            currentFont |= Cell.UNDERLINE;
+        else
+            currentFont &= ~Cell.UNDERLINE;
+    }
+
+    public void setAttributes(byte fg, byte bg, int ft)
+    {
+        currentFg = fg;
+        currentBg = bg;
+        currentFont = ft;
     }
 
     private Line getLine(int y)
