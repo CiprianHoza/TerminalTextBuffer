@@ -43,6 +43,16 @@ public class TerminalBuffer {
         {
             cursorX = Math.max(0, Math.min(width - 1, cursorX + cells));
         }
+
+        public void setX(int x)
+        {
+            cursorX = Math.max(0, Math.min(width - 1, x));
+        }
+
+        public void setY(int y)
+        {
+            cursorY = Math.max(0, Math.min(height - 1, y));
+        }
     }
 
     public Cursor cursor = new Cursor(0, 0);
@@ -92,15 +102,13 @@ public class TerminalBuffer {
     private Line getLine(int y)
     {
         int index = (allLines.size() - height) + y;
-        return allLines.get(index);
+        if (index >= 0 && index < allLines.size())
+            return allLines.get(index);
+        return null;
     }
 
-    public void write(int character)
+    private void validateMoveCursor()
     {
-        Line currentLine = getLine(cursor.cursorY);
-        Cell newCell = new Cell(character, currentFg, currentBg, currentFont);
-
-        currentLine.write(cursor.cursorX, newCell);
         cursor.cursorX++;
         if (cursor.cursorX >= this.width) {
             cursor.cursorX = 0;
@@ -112,6 +120,34 @@ public class TerminalBuffer {
             }
         }
     }
+
+
+    public void write(int character)
+    {
+        Line currentLine = getLine(cursor.cursorY);
+        Cell newCell = new Cell(character, currentFg, currentBg, currentFont);
+
+        currentLine.write(cursor.cursorX, newCell);
+        validateMoveCursor();
+    }
+
+    public void write(String text)
+    {
+        text.codePoints().forEach(this::write);
+    }
+
+    public void insert(String text)
+    {
+        text.codePoints().forEach(cp -> {
+            Line currentLine = getLine(cursor.cursorY);
+            Cell newCell = new Cell(cp, currentFg, currentBg, currentFont);
+
+            currentLine.insert(cursor.cursorX, newCell);
+
+            validateMoveCursor();
+        });
+    }
+
 
     public void scrollUp()
     {
@@ -175,7 +211,7 @@ public class TerminalBuffer {
         Line currentLine = getLine(y);
         if (currentLine != null)
             return currentLine.getCell(x).background;
-        return -2;
+        return -1;
     }
 
     public int getForeGround(int x, int y)
@@ -183,7 +219,7 @@ public class TerminalBuffer {
         Line currentLine = getLine(y);
         if (currentLine != null)
             return currentLine.getCell(x).foreground;
-        return -2;
+        return -1;
     }
 
     public String getLineString(int y)
