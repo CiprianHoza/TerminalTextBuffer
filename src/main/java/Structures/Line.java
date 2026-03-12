@@ -11,13 +11,17 @@ public class Line {
             cells[i] = new Cell(' ', (byte)-1, (byte)-1, 0);
     }
 
-    public void insert(int x, Cell newCell)
+    public Cell insert(int x, Cell newCell)
     {
-        if (x < 0 || x >= cells.length) return;
+        if (x < 0 || x >= cells.length) return null;
+
+        Cell lastCell = cells[cells.length - 1];
 
         for (int i = this.cells.length - 1; i > x; i--)
             this.cells[i] = this.cells[i - 1];
         this.cells[x] = newCell;
+
+        return lastCell;
     }
 
     public void write(int x, Cell newCell)

@@ -141,9 +141,20 @@ public class TerminalBuffer {
         text.codePoints().forEach(cp -> {
             Line currentLine = getLine(cursor.cursorY);
             Cell newCell = new Cell(cp, currentFg, currentBg, currentFont);
+            int x = cursor.cursorX;
+            int y = cursor.cursorY;
 
-            currentLine.insert(cursor.cursorX, newCell);
+            while (newCell != null && y < height)
+            {
+                Line line = getLine(y);
 
+                if (line == null)
+                    break;
+
+                newCell = line.insert(x, newCell);
+                x = 0;
+                y++;
+            }
             validateMoveCursor();
         });
     }
