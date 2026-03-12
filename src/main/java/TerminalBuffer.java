@@ -121,4 +121,30 @@ public class TerminalBuffer {
             allLines.remove(0);
         }
     }
+
+    public void fillLine(int index, int character)
+    {
+        Line currentLine = getLine(index);
+
+        for (int i = 0; i < width; i++)
+            currentLine.write(i, new Cell(character, currentFg, currentBg, currentFont));
+    }
+
+    public void clearAll()
+    {
+        allLines.clear();
+        this.cursor = new Cursor(0, 0);
+
+        for (int i = 0; i < height; i++)
+            allLines.add(new Line(width));
+    }
+
+    public void clearScreen()
+    {
+        cursor.setVertically(-height);
+        cursor.setHorizontally(-width);
+
+        for (int i = 0; i < height; i++)
+            fillLine(i, ' ');
+    }
 }

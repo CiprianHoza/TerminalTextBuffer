@@ -8,7 +8,7 @@ public class Line {
     {
         this.cells = new Cell[width];
         for (int i = 0; i < width; i++)
-            cells[i] = new Cell(' ', (byte)0, (byte)0, 0);
+            cells[i] = new Cell(' ', (byte)-1, (byte)-1, 0);
     }
 
     public void insert(int x, Cell newCell)
