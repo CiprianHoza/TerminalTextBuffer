@@ -93,4 +93,43 @@ public class TerminalBufferTest {
         assertTrue(data.contains("Line 400"), "Line 400 should be the new start of the scrollback");
     }
 
+    @Test
+    @DisplayName("Writing a string longer than 'width' should correctly wrap and scroll")
+    void WriteWrapTest()
+    {
+        //Creating a text longer than 'width' and writing it into the buffer
+        String text = "A".repeat(60) + "B".repeat(40);
+        buffer.write(text);
+
+        //On the first line, the first 60 cells are 'A' and the rest 'B'
+        assertEquals('A', (char)buffer.getCharacter(59, 0));
+        assertEquals('B', (char)buffer.getCharacter(60, 0));
+        assertEquals('B', (char)buffer.getCharacter(79, 0));
+
+        //On the second line, there are 20 'B's (that were pushed from the first line)
+        assertEquals('B', (char)buffer.getCharacter(0, 1));
+        assertEquals('B', (char)buffer.getCharacter(19, 1));
+        assertEquals(' ', (char)buffer.getCharacter(20, 1));
+    }
+
+    @Test
+    @DisplayName("clearAll() should reset everything even when buffer is at maximum capacity")
+    void clearAllTest()
+    {
+        //Filling the buffer
+        for (int i = 0; i < 200; i++)
+            buffer.scrollUp();
+        buffer.write("this is a text here");
+
+        buffer.clearAll();
+
+        //The cursor's position should be at the start
+        assertEquals(0, buffer.cursor.getPositionByX());
+        assertEquals(0, buffer.cursor.getPositionByY());
+
+        //There shouldn't be any text besides newline and spaces
+        String text = buffer.getScrAllString().replace("\n", "").trim();
+        assertEquals("", text, "The buffer should be empty");
+    }
+
 }
