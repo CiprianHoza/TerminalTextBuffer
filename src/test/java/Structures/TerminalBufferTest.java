@@ -74,5 +74,23 @@ public class TerminalBufferTest {
         assertEquals(' ', (char)buffer.getCharacter(1, 3));
     }
 
+    @Test
+    @DisplayName("Should perfectly maintain scrollback integrity during data influx")
+    void testDataInflux()
+    {
+        //Writing on the first 500 lines
+        for (int i = 0; i < 500; i++)
+        {
+            buffer.write("Line " + String.format("%03d", i));
+            buffer.scrollUp();
+        }
+        //because of the height = 24 and maxxScrollBack = 100, the maximum length of screen + scrollback
+        //should be 124 lines
+
+        String data = buffer.getScrAllString();
+        assertFalse(data.contains("Line 000"), "The oldest line should be gone");
+        assertFalse(data.contains("Line 375"), "The line 375 should be evicted");
+        assertTrue(data.contains("Line 400"), "Line 400 should be the new start of the scrollback");
+    }
 
 }
