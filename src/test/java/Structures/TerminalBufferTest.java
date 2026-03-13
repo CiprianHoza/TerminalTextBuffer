@@ -185,4 +185,17 @@ public class TerminalBufferTest {
         assertEquals(blue, buffer.getBackGround(60, 21));
         assertEquals(' ', (char)buffer.getCharacter(60, 21), "Screen cells should be empty");
     }
+
+    @Test
+    @DisplayName("Should handle 32-bit Unicode characters correctly")
+    void testUnicodeCharacters()
+    {
+        //Writing a 32-bit Unicode emoji into the buffer
+        int emoji = 0x1F600;
+        buffer.write(emoji);
+
+        //Because the cells have content type 'int', the cursor should only move by 1
+        assertEquals(emoji, buffer.getCharacter(0, 0));
+        assertEquals(1, buffer.cursor.getPositionByX());
+    }
 }
