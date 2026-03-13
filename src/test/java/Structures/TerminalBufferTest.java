@@ -132,4 +132,33 @@ public class TerminalBufferTest {
         assertEquals("", text, "The buffer should be empty");
     }
 
+    @Test
+    @DisplayName("clearScreen() should wipe visible text and reset cursor but preserve scrollback")
+    void clearScreenTest()
+    {
+        //Writing something in scrollback area
+        buffer.write("text example: scrollback area");
+        buffer.scrollUp();
+
+        //Now writing something in the screen area
+        buffer.cursor.setX(0);
+        buffer.cursor.setY(0);
+        buffer.write("screen area text example");
+        assertTrue(buffer.getScreenString().contains("screen area text example"));
+
+        buffer.clearScreen();
+
+        //The cursor's position should be at the start
+        assertEquals(0, buffer.cursor.getPositionByX());
+        assertEquals(0, buffer.cursor.getPositionByY());
+
+        //The screen content should be empty
+        String screen = buffer.getScreenString().replace("\n", "").trim();
+        assertEquals("", screen, "Screen area should not have any text");
+
+        //The scrollback area should be intact
+        String scrollback = buffer.getLineString(-1);
+        assertTrue(scrollback.contains("text example: scrollback area"));
+    }
+
 }
