@@ -161,4 +161,28 @@ public class TerminalBufferTest {
         assertTrue(scrollback.contains("text example: scrollback area"));
     }
 
+    @Test
+    @DisplayName("Should correctly store and clear colors using foreground and background attributes")
+    void testColorAttributes()
+    {
+        //Setting the background and foreground colors
+        byte red = 1;
+        byte green = 2;
+        buffer.setAttributes(red, green, 0);
+
+        buffer.write("A");
+
+        //Verifying the attributes
+        assertEquals(red, buffer.getForeGround(0, 0), "The foreground color should be red");
+        assertEquals(green, buffer.getBackGround(0, 0), "The background color should be green");
+
+        //Setting the foreground to the default value and background to blue color
+        byte blue = 4;
+        buffer.setAttributes((byte)-1, blue, 0);
+        buffer.clearScreen();
+
+        //Now every cell on the screen should be with background attribute set to blue
+        assertEquals(blue, buffer.getBackGround(60, 21));
+        assertEquals(' ', (char)buffer.getCharacter(60, 21), "Screen cells should be empty");
+    }
 }
